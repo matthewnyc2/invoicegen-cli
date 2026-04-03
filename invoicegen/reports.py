@@ -36,13 +36,18 @@ def _gradient_bar(width: int, max_width: int = 28) -> Text:
         bar.append(BLOCK_LIGHT * max_width, style=GHOST)
         return bar
 
-    # Split the filled portion into gradient thirds
-    third = max(1, width // 3)
-    remainder = width - (third * 2)
+    # For very small widths skip the gradient split to avoid rendering extra chars
+    if width <= 2:
+        bar.append(BLOCK_FULL * width, style=PRIMARY)
+    else:
+        # Split the filled portion into gradient thirds
+        third = max(1, width // 3)
+        remainder = max(0, width - (third * 2))
 
-    bar.append(BLOCK_MED * third, style=PRIMARY_DIM)
-    bar.append(BLOCK_DARK * third, style=PRIMARY)
-    bar.append(BLOCK_FULL * remainder, style=PRIMARY)
+        bar.append(BLOCK_MED * third, style=PRIMARY_DIM)
+        bar.append(BLOCK_DARK * third, style=PRIMARY)
+        if remainder > 0:
+            bar.append(BLOCK_FULL * remainder, style=PRIMARY)
 
     empty = max_width - width
     if empty > 0:
@@ -58,12 +63,17 @@ def _gradient_bar_cyan(width: int, max_width: int = 28) -> Text:
         bar.append(BLOCK_LIGHT * max_width, style=GHOST)
         return bar
 
-    third = max(1, width // 3)
-    remainder = width - (third * 2)
+    # For very small widths skip the gradient split to avoid rendering extra chars
+    if width <= 2:
+        bar.append(BLOCK_FULL * width, style=SECONDARY)
+    else:
+        third = max(1, width // 3)
+        remainder = max(0, width - (third * 2))
 
-    bar.append(BLOCK_MED * third, style=MUTED)
-    bar.append(BLOCK_DARK * third, style=SECONDARY)
-    bar.append(BLOCK_FULL * remainder, style=SECONDARY)
+        bar.append(BLOCK_MED * third, style=MUTED)
+        bar.append(BLOCK_DARK * third, style=SECONDARY)
+        if remainder > 0:
+            bar.append(BLOCK_FULL * remainder, style=SECONDARY)
 
     empty = max_width - width
     if empty > 0:

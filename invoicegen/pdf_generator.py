@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 
 from invoicegen.models import Invoice
 
@@ -36,18 +37,18 @@ class InvoicePDF(FPDF):
         self.set_font("Helvetica", "B", 24)
         self.set_text_color(*_PRIMARY_RGB)
         self.set_xy(15, 10)
-        self.cell(0, 10, "INVOICE", ln=False)
+        self.cell(0, 10, "INVOICE", new_x=XPos.RIGHT, new_y=YPos.TOP)
 
         # Invoice metadata in secondary cyan
         self.set_font("Helvetica", "", 11)
         self.set_text_color(*_SECONDARY_RGB)
         self.set_xy(140, 10)
-        self.cell(0, 6, self.invoice.invoice_number, ln=True, align="R")
+        self.cell(0, 6, self.invoice.invoice_number, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="R")
         self.set_text_color(*_TEXT_DIM)
         self.set_xy(140, 17)
-        self.cell(0, 6, f"Date: {self.invoice.created_at}", ln=True, align="R")
+        self.cell(0, 6, f"Date: {self.invoice.created_at}", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="R")
         self.set_xy(140, 24)
-        self.cell(0, 6, f"Due: {self.invoice.due_date}", ln=True, align="R")
+        self.cell(0, 6, f"Due: {self.invoice.due_date}", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="R")
 
         self.ln(25)
 
@@ -82,16 +83,16 @@ def generate_pdf(invoice: Invoice, output_path: str | None = None) -> Path:
     pdf.set_y(50)
     pdf.set_font("Helvetica", "B", 11)
     pdf.set_text_color(*_SECONDARY_RGB)
-    pdf.cell(0, 7, "BILL TO", ln=True)
+    pdf.cell(0, 7, "BILL TO", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(80, 80, 80)
-    pdf.cell(0, 6, invoice.client_name, ln=True)
+    pdf.cell(0, 6, invoice.client_name, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     if invoice.client_email:
-        pdf.cell(0, 6, invoice.client_email, ln=True)
+        pdf.cell(0, 6, invoice.client_email, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     if invoice.client_address:
         for line in invoice.client_address.split(", "):
-            pdf.cell(0, 6, line.strip(), ln=True)
+            pdf.cell(0, 6, line.strip(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     # Status badge with Brutalist colors
     pdf.set_xy(140, 50)
@@ -174,7 +175,7 @@ def generate_pdf(invoice: Invoice, output_path: str | None = None) -> Path:
         pdf.ln(15)
         pdf.set_font("Helvetica", "B", 10)
         pdf.set_text_color(*_SECONDARY_RGB)
-        pdf.cell(0, 7, "Notes:", ln=True)
+        pdf.cell(0, 7, "Notes:", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(*_TEXT_DIM)
         pdf.multi_cell(0, 5, invoice.notes)
@@ -189,9 +190,9 @@ def generate_pdf(invoice: Invoice, output_path: str | None = None) -> Path:
     pdf.cell(
         0, 5,
         f"Payment due within {_days_until_due(invoice)} days of invoice date.",
-        ln=True, align="C",
+        new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C",
     )
-    pdf.cell(0, 5, "Thank you for your business!", ln=True, align="C")
+    pdf.cell(0, 5, "Thank you for your business!", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
     out = Path(output_path)
     pdf.output(str(out))

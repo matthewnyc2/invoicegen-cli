@@ -128,7 +128,7 @@ class TestTaxCalculation:
         # 333.33 * 7.75 / 100 = 25.833075 -> 25.83
         inv = db.create_invoice(client.id, [("Service", 333.33)], tax_rate=7.75)
         assert inv.tax_amount == 25.83
-        assert inv.total == 333.33 + 25.83
+        assert inv.total == round(333.33 + 25.83, 2)
 
     def test_uses_default_tax_rate(self):
         """When no tax_rate is passed, uses the configured default."""
